@@ -38,19 +38,26 @@ void FFT_Processor_fftw::execute_reverse_int(cplx* res, const int* a) {
 
     std::ofstream file;
     file.open(std::string("execute_reverse_int_") + std::to_string(execute_reverse_int_counter) +
-              std::string(".txt"), std::ios::app);
-
-    execute_reverse_int_counter++;
-    file << std::setprecision(20) << N << std::endl;
+              std::string("_input.txt"), std::ios::app);
+    file << std::setprecision(40) << N << std::endl;
     for (int i = 0; i < N; ++i) {
       file << rev_in[i] << std::endl;
     }
-
     file.close();
 
     fftw_execute(rev_p);
     for (int32_t i=0; i<Ns2; i++) res[i]=rev_out_cplx[2*i+1];
     for (int32_t i=0; i<=Ns2; i++) assert(abs(rev_out_cplx[2*i])<1e-20);
+
+    file.open(std::string("execute_reverse_int_") + std::to_string(execute_reverse_int_counter) +
+              std::string("_output.txt"), std::ios::app);
+    file << std::setprecision(40) << N << std::endl;
+    for (int i = 0; i < N; ++i) {
+      file << res[i] << std::endl;
+    }
+    file.close();
+
+    execute_reverse_int_counter++;
 }
 int reverse_torus32_counter = 0;
 void FFT_Processor_fftw::execute_reverse_torus32(cplx* res, const Torus32* a) {
@@ -62,9 +69,9 @@ void FFT_Processor_fftw::execute_reverse_torus32(cplx* res, const Torus32* a) {
 
     std::ofstream file;
     file.open(std::string("execute_reverse_torus32_") + std::to_string(reverse_torus32_counter) +
-              std::string(".txt"), std::ios::app);
-    reverse_torus32_counter++;
-    file << std::setprecision(20) << N << std::endl;
+              std::string("_input.txt"), std::ios::app);
+
+    file << std::setprecision(40) << N << std::endl;
     for (int i = 0; i < N; ++i) {
       file << rev_in[i] << std::endl;
     }
@@ -73,6 +80,17 @@ void FFT_Processor_fftw::execute_reverse_torus32(cplx* res, const Torus32* a) {
     fftw_execute(rev_p);
     for (int32_t i=0; i<Ns2; i++) res[i]=rev_out_cplx[2*i+1];
     for (int32_t i=0; i<=Ns2; i++) assert(abs(rev_out_cplx[2*i])<1e-20);
+
+    file.open(std::string("execute_reverse_torus32_") + std::to_string(reverse_torus32_counter) +
+              std::string("_output.txt"), std::ios::app);
+
+    file << std::setprecision(40) << N << std::endl;
+    for (int i = 0; i < N; ++i) {
+      file << res[i] << std::endl;
+    }
+    file.close();
+
+    reverse_torus32_counter++;
 }
 
 int Torus32_counter = 0;
@@ -85,10 +103,8 @@ void FFT_Processor_fftw::execute_direct_Torus32(Torus32* res, const cplx* a) {
 
     std::ofstream file;
     file.open(std::string("execute_direct_Torus32_") + std::to_string(Torus32_counter) +
-              std::string(".txt"), std::ios::app);
-    Torus32_counter++;
-
-    file << std::setprecision(20) << Ns2 * 2 << std::endl;
+              std::string("_input.txt"), std::ios::app);
+    file << std::setprecision(40) << Ns2 * 2 << std::endl;
 
     for (int32_t i = 0; i < Ns2 * 2; ++i) {
       file << in_cplx[i] << std::endl;
@@ -99,6 +115,16 @@ void FFT_Processor_fftw::execute_direct_Torus32(Torus32* res, const cplx* a) {
     for (int32_t i=0; i<N; i++) res[i]=Torus32(int64_t(out[i]*_1sN*_2p32));
     //pas besoin du fmod... Torus32(int64_t(fmod(rev_out[i]*_1sN,1.)*_2p32));
     for (int32_t i=0; i<N; i++) assert(fabs(out[N+i]+out[i])<1e-20);
+
+    file.open(std::string("execute_direct_Torus32_") + std::to_string(Torus32_counter) +
+              std::string("_output.txt"), std::ios::app);
+    file << std::setprecision(40) << Ns2 * 2 << std::endl;
+    for (int i = 0; i < N; ++i) {
+      file << res[i] << std::endl;
+    }
+
+    file.close();
+    Torus32_counter++;
 }
 
 FFT_Processor_fftw::~FFT_Processor_fftw() {
