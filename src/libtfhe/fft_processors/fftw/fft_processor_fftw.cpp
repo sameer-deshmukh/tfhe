@@ -26,7 +26,9 @@ void FFT_Processor_fftw::plan_fftw() {
     //ensure fftw plan thread safety
     static std::mutex mutex;
     std::lock_guard<std::mutex> lock(mutex);
+    // IFFT
     rev_p = fftw_plan_dft_r2c_1d(_2N, rev_in, rev_out, FFTW_ESTIMATE);
+    // FFT
     p = fftw_plan_dft_c2r_1d(_2N, in, out, FFTW_ESTIMATE);
 }
 
