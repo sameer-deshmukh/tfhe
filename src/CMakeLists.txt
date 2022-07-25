@@ -43,7 +43,7 @@ pkg_check_modules(PC_FFTW QUIET fftw3)
 set(FFTW_DEFINITIONS ${PC_FFTW_CFLAGS_OTHER})
 find_path(FFTW_INCLUDES fftw3.h
     HINTS ${PC_FFTW_INCLUDEDIR} ${PC_FFTW_INCLUDE_DIRS})
-find_library (FFTW_LIBRARIES NAMES fftw3 
+find_library (FFTW_LIBRARIES NAMES fftw3
     HINTS ${PC_FFTW_LIBDIR} ${PC_FFTW_LIBRARY_DIRS})
 # handle the QUIETLY and REQUIRED arguments and set FFTW_FOUND to
 # TRUE if all listed variables are TRUE

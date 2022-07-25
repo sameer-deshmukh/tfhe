@@ -15,3 +15,17 @@ set(HEADERS
 include_directories(${FFTW_INCLUDES})
 add_library(tfhe-fft-fftw OBJECT ${SRCS} ${HEADERS})
 set_property(TARGET tfhe-fft-fftw PROPERTY POSITION_INDEPENDENT_CODE ON)
+
+pkg_check_modules(GMP REQUIRED IMPORTED_TARGET gmp)
+pkg_check_modules(MPFR REQUIRED IMPORTED_TARGET mpfr)
+
+target_link_libraries(tfhe-fft-fftw ${GMP_LDFLAGS})
+target_link_libraries(tfhe-fft-fftw ${MPFR_LDFLAGS})
+
+target_include_directories(tfhe-fft-fftw PUBLIC ${GMP_INCLUDE_DIRS})
+target_include_directories(tfhe-fft-fftw PUBLIC ${MPFR_INCLUDE_DIRS})
+
+
+pkg_check_modules(NEXT_POSITS REQUIRED IMPORTED_TARGET next-posits)
+target_link_libraries(tfhe-fft-fftw ${NEXT_POSITS_LDFLAGS})
+target_include_directories(tfhe-fft-fftw PUBLIC ${NEXT_POSITS_INCLUDE_DIRS})
