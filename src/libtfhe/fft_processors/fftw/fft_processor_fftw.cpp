@@ -9,13 +9,15 @@
 
 #include <fstream>
 
-#include "next-posits/posit_32.h"
+#include "next_posits/posit_32.h"
 
 unsigned long long num_inputs = 0, num_outputs = 0, exact_inputs = 0, exact_outputs = 0;
 
 bool
-mpfr_p32_is_exact(double ifft_input, posit32 converted_posit) {
+mpfr_p32_is_exact(mpfr_srcptr exact_input, posit32 converted_posit) {
+  bool is_exact = false;
 
+  return is_exact;
 }
 
 FFT_Processor_fftw::FFT_Processor_fftw(const int32_t N): _2N(2*N),N(N),Ns2(N/2) {
@@ -65,7 +67,7 @@ void FFT_Processor_fftw::execute_reverse_int(cplx* res, const int* a) {
       mpfr_set_d(exact_input, rev_in[i], MPFR_RNDN);
       posit32 converted_posit = mpfr2posit(exact_input); // convert the input into a p32.
       // check if the posit exactly matches the int32 input with MPFR.
-      if (mpfr_p32_is_exact(ifft_input, converted_posit)) {
+      if (mpfr_p32_is_exact(exact_input, converted_posit)) {
         exact_inputs++;
       }
     }

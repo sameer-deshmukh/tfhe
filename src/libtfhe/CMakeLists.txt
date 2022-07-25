@@ -43,8 +43,20 @@ foreach (FFT_PROCESSOR IN LISTS FFT_PROCESSORS)
         $<TARGET_OBJECTS:tfhe-fft-${FFT_PROCESSOR}>)
     set_property(TARGET tfhe-${FFT_PROCESSOR} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
+
+
     if (FFT_PROCESSOR STREQUAL "fftw")
-        target_link_libraries(tfhe-fftw ${FFTW_LIBRARIES})
+      pkg_check_modules(NEXT_POSITS REQUIRED IMPORTED_TARGET next_posits)
+
+      target_link_libraries(tfhe-fftw
+        PkgConfig::NEXT_POSITS)
+
+      target_link_libraries(tfhe-fftw ${FFTW_LIBRARIES})
+      target_link_libraries(tfhe-fftw ${NEXT_POSITS_LDFLAGS})
+      target_link_libraries(tfhe-fftw ${GMP_LDFLAGS})
+      target_link_libraries(tfhe-fftw ${MPFR_LDFLAGS})
+
+
     endif (FFT_PROCESSOR STREQUAL "fftw")
 
     install(TARGETS tfhe-${FFT_PROCESSOR}
