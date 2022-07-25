@@ -53,6 +53,7 @@ foreach (FFT_PROCESSOR IN LISTS FFT_PROCESSORS)
 
       target_link_libraries(tfhe-fftw ${FFTW_LIBRARIES})
       target_link_libraries(tfhe-fftw ${NEXT_POSITS_LDFLAGS})
+      target_link_libraries(tfhe-fftw "-rpath ${NEXT_POSITS_LIBRARY_DIRS}")
       target_link_libraries(tfhe-fftw ${GMP_LDFLAGS})
       target_link_libraries(tfhe-fftw ${MPFR_LDFLAGS})
 

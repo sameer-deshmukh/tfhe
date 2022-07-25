@@ -4,6 +4,8 @@ export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$HOME/gitrepos/gmp-6.2.1:$HOME/gitrepos/
 export MPC_DIR=$HOME/gitrepos/next-posits/mpc-1.2.1
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/Users/sameer/gitrepos/next-posits/build
 
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/Users/sameer/gitrepos/next-posits/build
+
 rm -rf build
 mkdir build
 cd build
@@ -14,5 +16,5 @@ cmake ../src -DCMAKE_INSTALL_PREFIX=$PWD -DENABLE_FFTW=ON -DENABLE_NAYUKI_AVX=OF
       -DCMAKE_C_FLAGS="-I$MPC_DIR/include" \
       -DCMAKE_EXE_LINKER_FLAGS="$MPC_DIR/lib/libmpc.a"
 
-make VERBOSE=1
-make install
+make -j VERBOSE=1
+make -j install
