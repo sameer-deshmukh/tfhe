@@ -6,7 +6,7 @@
 #include <cassert>
 #include <cmath>
 #include <mutex>
-
+#include <iostream>
 #include <fstream>
 
 #include "next_posits/posit_32.h"
@@ -15,8 +15,20 @@ unsigned long long num_inputs = 0, num_outputs = 0, exact_inputs = 0, exact_outp
 
 bool
 mpfr_p32_is_exact(mpfr_srcptr exact_input, posit32 converted_posit) {
+  mpfr_t conversion;
+  mpfr_init2(conversion, precision);
   bool is_exact = false;
 
+  posit2mpfr(conversion, converted_posit);
+
+  if (mpfr_cmp(exact_input, conversion) == 0) {
+    is_exact = true;
+  }
+  else {
+    mpfr_printf("input: %.32Rf converted: %.32Rf \n", exact_input, conversion);
+  }
+
+  mpfr_clear(conversion);
   return is_exact;
 }
 
@@ -47,7 +59,7 @@ void FFT_Processor_fftw::plan_fftw() {
 int execute_reverse_int_counter = 0;
 void FFT_Processor_fftw::execute_reverse_int(cplx* res, const int* a) {
     mpfr_t exact_input;
-    mpfr_init(exact_input);
+    mpfr_init2(exact_input, precision);
     cplx* rev_out_cplx = (cplx*) rev_out; //fftw_complex and cplx are layout-compatible
     for (int32_t i=0; i<N; i++) rev_in[i]=a[i]/2.;
     for (int32_t i=0; i<N; i++) rev_in[N+i]=-rev_in[i];
@@ -86,13 +98,16 @@ void FFT_Processor_fftw::execute_reverse_int(cplx* res, const int* a) {
 
     // execute_reverse_int_counter++;
     mpfr_clear(exact_input);
+
+    std::cout << "inputs: " << num_inputs << " outputs: " << num_outputs
+              << " exact ip: " << exact_inputs << " exact op: " << exact_outputs << std::endl;
 }
 
 // accepts an integer and outputs a complex.
 int reverse_torus32_counter = 0;
 void FFT_Processor_fftw::execute_reverse_torus32(cplx* res, const Torus32* a) {
     mpfr_t exact_input;
-    mpfr_init(exact_input);
+    mpfr_init2(exact_input, precision);
     static const double _2pm33 = 1./double(INT64_C(1)<<33);
     int32_t* aa = (int32_t*) a;
     cplx* rev_out_cplx = (cplx*) rev_out; //fftw_complex and cplx are layout-compatible
@@ -140,7 +155,7 @@ void FFT_Processor_fftw::execute_reverse_torus32(cplx* res, const Torus32* a) {
 int Torus32_counter = 0;
 void FFT_Processor_fftw::execute_direct_Torus32(Torus32* res, const cplx* a) {
     mpfr_t exact_output;
-    mpfr_init(exact_output);
+    mpfr_init2(exact_output, precision);
     static const double _2p32 = double(INT64_C(1)<<32);
     static const double _1sN = double(1)/double(N);
     cplx* in_cplx = (cplx*) in; //fftw_complex and cplx are layout-compatible

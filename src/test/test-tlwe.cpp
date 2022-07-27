@@ -24,13 +24,15 @@ int32_t main(int32_t argc, char **argv) {
     const int32_t k = 2;
     const double alpha_min = 0.01;
     const double alpha_max = 0.071;
+    // size of the space of the coefficients of the message polynomial
     const int32_t Msize = 7; // taille de l'espace des coeffs du polynome du message
     const double alpha = 0.02;
     //TODO: parallelization
     static uniform_int_distribution<int32_t> distribution(0, Msize - 1);
 
     // PARAMETERS
-    TLweParams *params = new_TLweParams(N, k, alpha_min, alpha_max); //les deux alpha mis un peu au hasard
+    // the two alpha's put a bit randomly
+    TLweParams *params = new_TLweParams(N, k, alpha_min, alpha_max);
     // KEY
     TLweKey *key = new_TLweKey(params);
     // CIPHERTEXTS
@@ -76,7 +78,7 @@ int32_t main(int32_t argc, char **argv) {
 
     TorusPolynomial *phiT = new_TorusPolynomial(N);
 
-    for (int32_t trial = 1; trial < 1000; trial++) {
+    for (int32_t trial = 1; trial < 2; trial++) {
         Torus32 muT = modSwitchToTorus32(distribution(generator), Msize);
         Torus32 dechifT = 0;
 
@@ -92,24 +94,7 @@ int32_t main(int32_t argc, char **argv) {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // TEST ADD, SUB, LINEAR COMBINATION, POLYNOMIAL COMBINATIONS 
+    // TEST ADD, SUB, LINEAR COMBINATION, POLYNOMIAL COMBINATIONS
 
     cout << endl;
     cout << endl;
@@ -145,13 +130,13 @@ int32_t main(int32_t argc, char **argv) {
     int32_t muInt = 0;
 
 
-    for (int32_t trial = 1; trial < 2; trial++) {
+    for (int32_t trial = 1; trial < 0; trial++) {
 
         tLweSymEncrypt(cipher0, mu0, alpha, key); // ENCRYPTION
         tLweSymEncrypt(cipher1, mu1, alpha, key); // ENCRYPTION
 
 
-        // cipher = cipher0 + cipher1 
+        // cipher = cipher0 + cipher1
         tLweCopy(cipher, cipher0, params);
         tLweAddTo(cipher, cipher1, params);
         torusPolynomialAdd(mu, mu0, mu1); // mu = mu0 + mu1
@@ -169,7 +154,7 @@ int32_t main(int32_t argc, char **argv) {
 
 
 
-        // cipher = cipher0 - cipher1 
+        // cipher = cipher0 - cipher1
         tLweCopy(cipher, cipher0, params);
         tLweSubTo(cipher, cipher1, params);
         torusPolynomialSub(mu, mu0, mu1); // mu = mu0 - mu1
@@ -187,7 +172,7 @@ int32_t main(int32_t argc, char **argv) {
 
 
 
-        // cipher = cipher0 + p.cipher1 
+        // cipher = cipher0 + p.cipher1
         tLweCopy(cipher, cipher0, params);
         tLweAddMulTo(cipher, p, cipher1, params);
         torusPolynomialAddMulZ(mu, mu0, p, mu1); // mu = mu0 + p.mu1
@@ -206,7 +191,7 @@ int32_t main(int32_t argc, char **argv) {
 
 
 
-        // cipher = cipher0 - p.cipher1 
+        // cipher = cipher0 - p.cipher1
         tLweCopy(cipher, cipher0, params);
         tLweSubMulTo(cipher, p, cipher1, params);
         torusPolynomialSubMulZ(mu, mu0, p, mu1); // mu = mu0 - p.mu1
@@ -224,7 +209,7 @@ int32_t main(int32_t argc, char **argv) {
 
 
         /*
-        // result = result + poly.sample 
+        // result = result + poly.sample
         tLweCopy(cipher, cipher0, params);
         tLweAddMulRTo(cipher, poly, cipher1, params);
         // mu = mu0 + poly.mu1
@@ -232,14 +217,14 @@ int32_t main(int32_t argc, char **argv) {
         torusPolynomialAddMulRKaratsuba(mu, poly, mu1);
 
         tLweSymDecrypt(dechif, cipher, key, Msize); // DECRYPTION
-        
+
         cout << "Test tLweAddMulRTo Trial:" << trial << endl;
         for (int32_t i = 0; i < N; ++i)
         {
             decInt = modSwitchFromTorus32(dechif->coefsT[i], Msize);
             muInt = modSwitchFromTorus32(mu->coefsT[i], Msize);
             if (decInt != muInt)
-                cout << decInt << " =? " << muInt << " error!!!" << endl;     
+                cout << decInt << " =? " << muInt << " error!!!" << endl;
         }
         cout << cipher->current_variance << endl;
         cout << "----------------------" << endl;
@@ -263,7 +248,7 @@ int32_t main(int32_t argc, char **argv) {
 
 
 
-    // TEST ADD, SUB, LINEAR COMBINATION, POLYNOMIAL COMBINATIONS 
+    // TEST ADD, SUB, LINEAR COMBINATION, POLYNOMIAL COMBINATIONS
 
     cout << endl;
     cout << endl;
@@ -278,7 +263,7 @@ int32_t main(int32_t argc, char **argv) {
 
     int32_t pT = 1;
 
-    for (int32_t trial = 1; trial < 1000; trial++) {
+    for (int32_t trial = 1; trial < 0; trial++) {
 
         // MESSAGES
         Torus32 muT0 = modSwitchToTorus32(distribution(generator), Msize);
@@ -293,7 +278,7 @@ int32_t main(int32_t argc, char **argv) {
 
 
 
-        // cipher = cipher0 + cipher1 
+        // cipher = cipher0 + cipher1
         tLweCopy(cipherT, cipherT0, params);
         tLweAddTo(cipherT, cipherT1, params);
         muT = muT0 + muT1;
@@ -310,7 +295,7 @@ int32_t main(int32_t argc, char **argv) {
 
 
 
-        // cipher = cipher0 - cipher1 
+        // cipher = cipher0 - cipher1
         tLweCopy(cipherT, cipherT0, params);
         tLweSubTo(cipherT, cipherT1, params);
         muT = muT0 - muT1;
@@ -328,7 +313,7 @@ int32_t main(int32_t argc, char **argv) {
 
 
 
-        // cipher = cipher0 + p.cipher1 
+        // cipher = cipher0 + p.cipher1
         tLweCopy(cipherT, cipherT0, params);
         tLweAddMulTo(cipherT, pT, cipherT1, params);
         muT = muT0 + pT * muT1;
@@ -346,7 +331,7 @@ int32_t main(int32_t argc, char **argv) {
 
 
 
-        // result = result - p.sample 
+        // result = result - p.sample
         tLweCopy(cipherT, cipherT0, params);
         tLweSubMulTo(cipherT, pT, cipherT1, params);
         muT = muT0 - pT * muT1;
@@ -376,7 +361,7 @@ int32_t main(int32_t argc, char **argv) {
     delete_TorusPolynomial(phiT);
     delete_TorusPolynomial(dechif);
 
-    //ATTENTION, le params est utilisé dans divers destructeurs, il faut l'effacer en dernier 
+    //ATTENTION, le params est utilisé dans divers destructeurs, il faut l'effacer en dernier
     delete_TLweParams(params);
 
     return 0;
