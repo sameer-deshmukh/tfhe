@@ -8,27 +8,63 @@
 #include <mutex>
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
 
 #include "next_posits/posit_32.h"
 
 unsigned long long num_inputs = 0, num_outputs = 0, exact_inputs = 0, exact_outputs = 0;
 
+#define TOLERANCE 1e-6
+
 bool
 mpfr_p32_is_exact(mpfr_srcptr exact_input, posit32 converted_posit) {
-  mpfr_t conversion;
+  mpfr_t conversion, rel_error, diff, fp32_rel_error, fp64_rel_error;
   mpfr_init2(conversion, precision);
+  mpfr_init2(rel_error, precision);
+  mpfr_init2(diff, precision);
+
+  mpfr_init2(fp32_rel_error, precision);
+  mpfr_init2(fp64_rel_error, precision);
   bool is_exact = false;
 
   posit2mpfr(conversion, converted_posit);
 
-  if (mpfr_cmp(exact_input, conversion) == 0) {
+  mpfr_sub(diff, exact_input, conversion, MPFR_RNDN);
+  mpfr_abs(diff, diff, MPFR_RNDN);
+  mpfr_div(rel_error, diff, exact_input, MPFR_RNDN);
+
+  if (mpfr_cmp_d(rel_error, TOLERANCE) <= 0) {
     is_exact = true;
   }
   else {
-    mpfr_printf("input: %.32Rf converted: %.32Rf \n", exact_input, conversion);
+    mpfr_printf("input: %.32Rf converted: %.32Rf rel_error: %.32Rf\n",
+                exact_input, conversion, rel_error);
   }
 
+  float converted_float = mpfr_get_flt(exact_input, MPFR_RNDN);
+  mpfr_set_flt(conversion, converted_float, MPFR_RNDN);
+  mpfr_sub(diff, exact_input, conversion, MPFR_RNDN);
+  mpfr_abs(diff, diff, MPFR_RNDN);
+  mpfr_div(fp32_rel_error, diff, exact_input, MPFR_RNDN);
+
+  double converted_double = mpfr_get_d(exact_input, MPFR_RNDN);
+  mpfr_set_d(conversion, converted_double, MPFR_RNDN);
+  mpfr_sub(diff, exact_input, conversion, MPFR_RNDN);
+  mpfr_abs(diff, diff, MPFR_RNDN);
+  mpfr_div(fp64_rel_error, diff, exact_input, MPFR_RNDN);
+
+  FILE *file;
+  file = fopen("fft_accuracy.csv", "a");
+  mpfr_fprintf(file, "%.16Rf,%.16Rf,%.16Rf,%.16Rf\n",
+               exact_input, rel_error, fp32_rel_error, fp64_rel_error);
+  fclose(file);
+
   mpfr_clear(conversion);
+  mpfr_clear(rel_error);
+  mpfr_clear(diff);
+  mpfr_clear(fp32_rel_error);
+  mpfr_clear(fp64_rel_error);
+
   return is_exact;
 }
 
@@ -99,8 +135,8 @@ void FFT_Processor_fftw::execute_reverse_int(cplx* res, const int* a) {
     // execute_reverse_int_counter++;
     mpfr_clear(exact_input);
 
-    std::cout << "inputs: " << num_inputs << " outputs: " << num_outputs
-              << " exact ip: " << exact_inputs << " exact op: " << exact_outputs << std::endl;
+    // std::cout << "inputs: " << num_inputs << " outputs: " << num_outputs
+    //           << " exact ip: " << exact_inputs << " exact op: " << exact_outputs << std::endl;
 }
 
 // accepts an integer and outputs a complex.

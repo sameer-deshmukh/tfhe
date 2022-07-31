@@ -20,4 +20,5 @@ cmake ../src -DCMAKE_INSTALL_PREFIX=$PWD -DENABLE_FFTW=ON -DENABLE_NAYUKI_AVX=OF
 make -j VERBOSE=1
 make -j install
 
+rm fft_accuracy.csv
 ./test/test-tlwe-fftw
