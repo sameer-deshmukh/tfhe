@@ -21,4 +21,5 @@ make -j VERBOSE=1
 make -j install
 
 rm fft_accuracy.csv
+rm fft_accuracy.dat
 ./test/test-tlwe-fftw

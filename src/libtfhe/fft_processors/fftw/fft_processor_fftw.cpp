@@ -30,8 +30,8 @@ mpfr_p32_is_exact(mpfr_srcptr exact_input, posit32 converted_posit) {
   posit2mpfr(conversion, converted_posit);
 
   mpfr_sub(diff, exact_input, conversion, MPFR_RNDN);
-  mpfr_abs(diff, diff, MPFR_RNDN);
   mpfr_div(rel_error, diff, exact_input, MPFR_RNDN);
+  mpfr_abs(rel_error, rel_error, MPFR_RNDN);
 
   if (mpfr_cmp_d(rel_error, TOLERANCE) <= 0) {
     is_exact = true;
@@ -44,19 +44,27 @@ mpfr_p32_is_exact(mpfr_srcptr exact_input, posit32 converted_posit) {
   float converted_float = mpfr_get_flt(exact_input, MPFR_RNDN);
   mpfr_set_flt(conversion, converted_float, MPFR_RNDN);
   mpfr_sub(diff, exact_input, conversion, MPFR_RNDN);
-  mpfr_abs(diff, diff, MPFR_RNDN);
   mpfr_div(fp32_rel_error, diff, exact_input, MPFR_RNDN);
+  mpfr_abs(fp32_rel_error, fp32_rel_error, MPFR_RNDN);
 
   double converted_double = mpfr_get_d(exact_input, MPFR_RNDN);
   mpfr_set_d(conversion, converted_double, MPFR_RNDN);
   mpfr_sub(diff, exact_input, conversion, MPFR_RNDN);
-  mpfr_abs(diff, diff, MPFR_RNDN);
   mpfr_div(fp64_rel_error, diff, exact_input, MPFR_RNDN);
+  mpfr_abs(fp64_rel_error, fp64_rel_error, MPFR_RNDN);
 
   FILE *file;
-  file = fopen("fft_accuracy.csv", "a");
-  mpfr_fprintf(file, "%.16Rf,%.16Rf,%.16Rf,%.16Rf\n",
-               exact_input, rel_error, fp32_rel_error, fp64_rel_error);
+  double a[4];
+  a[0] = mpfr_get_d(exact_input, MPFR_RNDN);
+  a[1] = mpfr_get_d(rel_error, MPFR_RNDN);
+  a[2] = mpfr_get_d(fp32_rel_error, MPFR_RNDN);
+  a[3] = mpfr_get_d(fp64_rel_error, MPFR_RNDN);
+
+  file = fopen("fft_accuracy.dat", "ab");
+  fwrite(a, sizeof(double), 4, file);
+  // fprintf(file, "%lf %lf %lf %lf\n", a, b, c, d);
+  // mpfr_fprintf(file, "%.16Rf,%.16Rf,%.16Rf,%.16Rf\n",
+  //              exact_input, rel_error, fp32_rel_error, fp64_rel_error);
   fclose(file);
 
   mpfr_clear(conversion);

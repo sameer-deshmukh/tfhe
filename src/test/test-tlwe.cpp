@@ -130,7 +130,7 @@ int32_t main(int32_t argc, char **argv) {
     int32_t muInt = 0;
 
 
-    for (int32_t trial = 1; trial < 0; trial++) {
+    for (int32_t trial = 1; trial < 2; trial++) {
 
         tLweSymEncrypt(cipher0, mu0, alpha, key); // ENCRYPTION
         tLweSymEncrypt(cipher1, mu1, alpha, key); // ENCRYPTION
@@ -208,7 +208,7 @@ int32_t main(int32_t argc, char **argv) {
         cout << "----------------------" << endl;
 
 
-        /*
+
         // result = result + poly.sample
         tLweCopy(cipher, cipher0, params);
         tLweAddMulRTo(cipher, poly, cipher1, params);
@@ -228,7 +228,6 @@ int32_t main(int32_t argc, char **argv) {
         }
         cout << cipher->current_variance << endl;
         cout << "----------------------" << endl;
-        */
     }
 
 
@@ -263,7 +262,7 @@ int32_t main(int32_t argc, char **argv) {
 
     int32_t pT = 1;
 
-    for (int32_t trial = 1; trial < 0; trial++) {
+    for (int32_t trial = 1; trial < 1000; trial++) {
 
         // MESSAGES
         Torus32 muT0 = modSwitchToTorus32(distribution(generator), Msize);
