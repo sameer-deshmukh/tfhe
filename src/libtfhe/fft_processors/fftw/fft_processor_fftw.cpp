@@ -60,7 +60,7 @@ mpfr_p32_is_exact(mpfr_srcptr exact_input, posit32 converted_posit) {
   a[2] = mpfr_get_d(fp32_rel_error, MPFR_RNDN);
   a[3] = mpfr_get_d(fp64_rel_error, MPFR_RNDN);
 
-  file = fopen("fft_accuracy.dat", "ab");
+  file = fopen("fft_accuracy_long.dat", "ab");
   fwrite(a, sizeof(double), 4, file);
   // fprintf(file, "%lf %lf %lf %lf\n", a, b, c, d);
   // mpfr_fprintf(file, "%.16Rf,%.16Rf,%.16Rf,%.16Rf\n",
